@@ -24,17 +24,14 @@
                     <label for="gas-select">1. 使用氣體 (Input Gas)</label>
                     <select id="gas-select"></select>
                 </div>
-
                 <div class="form-group">
                     <label for="activity-data">2. 活動數據 (公噸, 小數 4 位)</label>
                     <input type="number" id="activity-data" value="108.0000" step="0.0001" min="0">
                 </div>
-
                 <div class="form-group">
                     <label for="allocation-rate">3. 活動數據分配 (0 ~ 100%)</label>
                     <input type="number" id="allocation-rate" value="100.0000" step="0.0001" min="0" max="100">
                 </div>
-
                 <div class="form-group">
                     <label for="gwp-version">4. GWP 版本</label>
                     <select id="gwp-version">
@@ -42,7 +39,6 @@
                         <option value="AR6">IPCC AR6 (第六次評估報告)</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="heel-factor">5. 考慮鋼瓶殘氣率</label>
                     <select id="heel-factor">
@@ -50,7 +46,6 @@
                         <option value="0.9" selected>否 (預設乘數 = 0.9)</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="wafer-size">6. 晶圓尺寸</label>
                     <select id="wafer-size">
@@ -58,7 +53,6 @@
                         <option value="200">200mm (8吋晶圓)</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="ut-value">7. 控制技術正常操作比例 (UT值 %)</label>
                     <input type="number" id="ut-value" value="100.0000" step="0.0001" min="0" max="100">
@@ -73,16 +67,13 @@
                 <div class="card-header">
                     <h2>📊 試算結果明細</h2>
                 </div>
-
                 <div id="results-output" class="table-responsive">
                     <!-- 表格動態生成 -->
                 </div>
-
                 <div class="summary-box">
                     <div class="summary-label">總排放當量 (Total Emissions)</div>
                     <div class="summary-value" id="total-emissions">0.0000 <span class="unit">tCO₂e</span></div>
                 </div>
-
                 <div class="formula-note">
                     <strong>📌 計算邏輯備忘：</strong><br>
                     • 實質淨活動量 = 活動數據 × (分配率 / 100) × 殘氣率乘數<br>
@@ -101,7 +92,6 @@
                 </div>
                 <button id="clear-all-btn" class="btn-clear-all" type="button">🗑️ 清空所有紀錄</button>
             </div>
-            
             <div id="history-container" class="history-table-responsive">
                 <!-- 動態載入歷史紀錄表格 -->
             </div>
