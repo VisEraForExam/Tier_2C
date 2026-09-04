@@ -14,7 +14,7 @@
         </header>
 
         <div class="main-layout">
-            <!-- 左側/輸入面板 (寬度約 32%) -->
+            <!-- 左側/輸入面板 -->
             <aside class="controls-card">
                 <div class="card-header">
                     <h2>📋 參數設定</h2>
@@ -65,9 +65,10 @@
                 </div>
 
                 <button id="calculate-btn" type="button">⚡ 立即試算排放量</button>
+                <button id="save-btn" type="button" class="btn-save">💾 儲存此筆試算紀錄</button>
             </aside>
 
-            <!-- 右側/結果展示面板 (寬度約 68%) -->
+            <!-- 右側/結果展示面板 -->
             <main class="results-card">
                 <div class="card-header">
                     <h2>📊 試算結果明細</h2>
@@ -85,11 +86,26 @@
                 <div class="formula-note">
                     <strong>📌 計算邏輯備忘：</strong><br>
                     • 實質淨活動量 = 活動數據 × (分配率 / 100) × 殘氣率乘數<br>
-                    • 尾氣削減因子 = $1 - [(\text{UT值} / 100) \times \text{去除率 } d_j]$<br>
-                    • 各氣體排放量 (t) = 實質淨活動量 × 排放/副產係數 × 尾氣削減因子
+                    • 實質排放量 (噸) = 原始排放量先四捨五入取至小數第 4 位<br>
+                    • 排放當量 (tCO₂e) = 實質排放量 (已四捨五入) × GWP<br>
+                    • 尾氣削減因子 = 1 - [(UT值 / 100) × 去除率 d_j]
                 </div>
             </main>
         </div>
+
+        <!-- 下方/歷史存檔紀錄區塊 -->
+        <section class="history-card">
+            <div class="card-header history-header">
+                <div class="header-left">
+                    <h2>📁 試算歷史紀錄 <span class="record-count" id="record-count">(0 / 20)</span></h2>
+                </div>
+                <button id="clear-all-btn" class="btn-clear-all" type="button">🗑️ 清空所有紀錄</button>
+            </div>
+            
+            <div id="history-container" class="history-table-responsive">
+                <!-- 動態載入歷史紀錄表格 -->
+            </div>
+        </section>
 
         <footer>
             <p>半導體製程 GHG Tier-2c 計算工具 ｜ 符合環境部盤查申報表五格式標準</p>
