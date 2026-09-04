@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>半導體製程溫室氣體 Tier-2c 試算工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>半導體製程溫室氣體 Tier-2c 試算工具</h1>
+            <p class="subtitle">依據環境部標準係數庫與 Tier-2c 完整公式運算 (支援 AR5 / AR6)</p>
+        </header>
+
+        <div class="main-layout">
+            <!-- 左側/輸入面板 (寬度約 32%) -->
+            <aside class="controls-card">
+                <div class="card-header">
+                    <h2>📋 參數設定</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="gas-select">1. 使用氣體 (Input Gas)</label>
+                    <select id="gas-select"></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="activity-data">2. 活動數據 (公噸, 小數 4 位)</label>
+                    <input type="number" id="activity-data" value="108.0000" step="0.0001" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="allocation-rate">3. 活動數據分配 (0 ~ 100%)</label>
+                    <input type="number" id="allocation-rate" value="100.0000" step="0.0001" min="0" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="gwp-version">4. GWP 版本</label>
+                    <select id="gwp-version">
+                        <option value="AR5" selected>IPCC AR5 (第五次評估報告)</option>
+                        <option value="AR6">IPCC AR6 (第六次評估報告)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="heel-factor">5. 考慮鋼瓶殘氣率</label>
+                    <select id="heel-factor">
+                        <option value="1.0">是 (乘數 = 1.0)</option>
+                        <option value="0.9" selected>否 (預設乘數 = 0.9)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="wafer-size">6. 晶圓尺寸</label>
+                    <select id="wafer-size">
+                        <option value="300" selected>300mm (12吋晶圓)</option>
+                        <option value="200">200mm (8吋晶圓)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ut-value">7. 控制技術正常操作比例 (UT值 %)</label>
+                    <input type="number" id="ut-value" value="100.0000" step="0.0001" min="0" max="100">
+                </div>
+
+                <button id="calculate-btn" type="button">⚡ 立即試算排放量</button>
+            </aside>
+
+            <!-- 右側/結果展示面板 (寬度約 68%) -->
+            <main class="results-card">
+                <div class="card-header">
+                    <h2>📊 試算結果明細</h2>
+                </div>
+
+                <div id="results-output" class="table-responsive">
+                    <!-- 表格動態生成 -->
+                </div>
+
+                <div class="summary-box">
+                    <div class="summary-label">總排放當量 (Total Emissions)</div>
+                    <div class="summary-value" id="total-emissions">0.0000 <span class="unit">tCO₂e</span></div>
+                </div>
+
+                <div class="formula-note">
+                    <strong>📌 計算邏輯備忘：</strong><br>
+                    • 實質淨活動量 = 活動數據 × (分配率 / 100) × 殘氣率乘數<br>
+                    • 尾氣削減因子 = $1 - [(\text{UT值} / 100) \times \text{去除率 } d_j]$<br>
+                    • 各氣體排放量 (t) = 實質淨活動量 × 排放/副產係數 × 尾氣削減因子
+                </div>
+            </main>
+        </div>
+
+        <footer>
+            <p>半導體製程 GHG Tier-2c 計算工具 ｜ 符合環境部盤查申報表五格式標準</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

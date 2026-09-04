@@ -1,0 +1,175 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. GWP 係數資料庫 (AR5 / AR6)
+    const GWP_DATA = {
+        "CF4": { "AR5": 6630, "AR6": 7380 },
+        "C2F6": { "AR5": 11100, "AR6": 12400 },
+        "CHF3": { "AR5": 12400, "AR6": 14600 },
+        "CH2F2": { "AR5": 677, "AR6": 771 },
+        "CH3F": { "AR5": 116, "AR6": 135 },
+        "C3F8": { "AR5": 8900, "AR6": 9290 },
+        "c-C4F8": { "AR5": 9540, "AR6": 10200 },
+        "NF3": { "AR5": 16100, "AR6": 17400 },
+        "SF6": { "AR5": 23500, "AR6": 24300 },
+        "C4F6": { "AR5": 0, "AR6": 0 },
+        "C5F8": { "AR5": 2, "AR6": 2 },
+        "C4F8O": { "AR5": 0, "AR6": 0 },
+        "C2HF5": { "AR5": 3170, "AR6": 3500 },
+        "N2O": { "AR5": 265, "AR6": 273 }
+    };
+
+    // 2. 尾氣處理去除率 DRE (d_j)
+    const DRE_FACTORS = {
+        "CF4": 0.89, "C2F4": 0.98, "C2F6": 0.98, "C3F8": 0.99, "C4F6": 0.98, "c-C4F8": 0.98, "C4F8O": 0.98, "C5F8": 0.98,
+        "CHF3": 0.98, "CH2F2": 0.99, "CH3F": 0.99, "C2HF5": 0.98, "NF3": 0.95, "SF6": 0.96, "N2O": 0.60
+    };
+
+    // 3. 300mm (12吋) 排放因子庫 (*** CORRECTED c-C4F8 NAME ***)
+    const EF_300MM = {
+        "(1-Ui)": {"CF4":0.65,"C2F6":0.80,"C3F8":0.30,"C4F6":0.15,"c-C4F8":0.18,"C5F8":0.10,"CHF3":0.38,"CH2F2":0.20,"CH3F":0.32,"NF3":0.16,"SF6":0.29,"N2O":0.00},
+        "BCF4": {"CF4":0.0,"C2F6":0.21,"C3F8":0.21,"C4F6":0.059,"c-C4F8":0.045,"C5F8":0.11,"CHF3":0.076,"CH2F2":0.060,"CH3F":0.031,"NF3":0.045,"SF6":0.034},
+        "BC2F6": {"CF4":0.061,"C2F6":0.0,"C3F8":0.18,"C4F6":0.062,"c-C4F8":0.027,"C5F8":0.083,"CHF3":0.062,"CH2F2":0.044,"CH3F":0.011,"NF3":0.045,"SF6":0.041},
+        "BC3F8": {"C5F8":0.00012},
+        "BC4F6": {"CF4":0.0015,"c-C4F8":0.0094,"CHF3":0.0001,"CH3F":0.0012},
+        "Bc-C4F8": {"CF4":0.0033,"C4F6":0.0051,"CHF3":0.00067,"CH2F2":0.072,"CH3F":0.007}, // Corrected from BC4F8
+        "BCH3F": {"CF4":0.0053,"C3F8":0.00073,"C4F6":0.00065,"c-C4F8":0.0022,"CHF3":0.037,"CH2F2":0.0044,"NF3":0.008,"SF6":0.0082},
+        "BCH2F2": {"CF4":0.014,"C4F6":0.00003,"c-C4F8":0.0014,"CHF3":0.0026,"CH3F":0.0023,"NF3":0.00086,"SF6":0.00002},
+        "BCHF3": {"CF4":0.013,"C3F8":0.012,"C4F6":0.017,"c-C4F8":0.029,"C5F8":0.0069,"CH2F2":0.057,"CH3F":0.0016,"NF3":0.025,"SF6":0.0039}
+    };
+
+    // 4. 200mm (8吋) 排放因子庫
+    const EF_200MM = {
+        "(1-Ui)":{"CF4":0.70,"C2F6":0.60,"C3F8":0.40,"c-C4F8":0.20,"CHF3":0.30,"NF3":0.20,"SF6":0.50},
+        "BCF4":{"C2F6":0.10,"C3F8":0.10,"c-C4F8":0.10,"CHF3":0.10,"NF3":0.10},
+        "BC2F6":{"C3F8":0.10,"c-C4F8":0.10},
+        "BCHF3":{"c-C4F8":0.05}
+    };
+
+    // DOM 元素綁定
+    const gasSelect = document.getElementById('gas-select');
+    const activityInput = document.getElementById('activity-data');
+    const allocationInput = document.getElementById('allocation-rate');
+    const gwpVersionSelect = document.getElementById('gwp-version');
+    const heelFactorSelect = document.getElementById('heel-factor');
+    const waferSizeSelect = document.getElementById('wafer-size');
+    const utValueInput = document.getElementById('ut-value');
+    const calculateBtn = document.getElementById('calculate-btn');
+    const resultsOutput = document.getElementById('results-output');
+    const totalEmissionsEl = document.getElementById('total-emissions');
+
+    // 精確四捨五入函數
+    function roundTo(num, decimals) {
+        const factor = Math.pow(10, decimals);
+        return Math.round((num + Number.EPSILON) * factor) / factor;
+    }
+
+    // 動態填入氣體選單
+    const gasList = Object.keys(EF_300MM['(1-Ui)']).filter(g => g !== 'N2O');
+    gasList.sort().forEach(gas => {
+        const opt = document.createElement('option');
+        opt.value = gas;
+        opt.textContent = gas;
+        gasSelect.appendChild(opt);
+    });
+    gasSelect.value = 'c-C4F8';
+
+    // 格式化輸入數值為小數點 4 位
+    [activityInput, allocationInput, utValueInput].forEach(input => {
+        input.addEventListener('blur', () => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) input.value = val.toFixed(4);
+        });
+    });
+
+    // 核心計算函數
+    function calculateEmissions() {
+        const gas = gasSelect.value;
+        const rawActivity = parseFloat(activityInput.value) || 0;
+        const allocationPercent = parseFloat(allocationInput.value) || 0;
+        const gwpVersion = gwpVersionSelect.value;
+        const heelMultiplier = parseFloat(heelFactorSelect.value) || 1.0;
+        const waferSize = waferSizeSelect.value;
+        const utPercent = parseFloat(utValueInput.value) || 0;
+
+        const netActivity = rawActivity * (allocationPercent / 100) * heelMultiplier;
+        const utRatio = utPercent / 100;
+        const EF_TABLE = waferSize === '300' ? EF_300MM : EF_200MM;
+
+        let totalCO2e = 0;
+        let tableRows = '';
+
+        // 1. 母氣體 (輸入氣體) 計算
+        const oneMinusUi = EF_TABLE['(1-Ui)']?.[gas] ?? 0;
+        const inputDRE = DRE_FACTORS[gas] ?? 0;
+        const inputAbatementFactor = 1 - (utRatio * inputDRE);
+
+        const inputGasEmissionRaw = netActivity * oneMinusUi * inputAbatementFactor;
+        const inputGasEmission = roundTo(inputGasEmissionRaw, 4);
+
+        const inputGasGWP = GWP_DATA[gas]?.[gwpVersion] ?? 0;
+        const inputGasCO2e = roundTo(inputGasEmission * inputGasGWP, 4);
+        totalCO2e += inputGasCO2e;
+
+        tableRows += `<tr>
+            <td><span class="badge-input">輸入氣體</span></td>
+            <td><strong>${gas}</strong></td>
+            <td>${oneMinusUi.toFixed(4)}</td>
+            <td>${(inputDRE * 100).toFixed(1)}%</td>
+            <td>${inputGasEmission.toFixed(4)}</td>
+            <td>${inputGasGWP.toLocaleString()}</td>
+            <td><strong>${inputGasCO2e.toFixed(4)}</strong></td>
+        </tr>`;
+
+        // 2. 副產物氣體計算
+        for (const factorKey in EF_TABLE) {
+            if (factorKey.startsWith('B')) {
+                const byProductGas = factorKey.substring(1);
+                const byProductEf = EF_TABLE[factorKey]?.[gas] ?? 0;
+
+                if (byProductEf > 0) {
+                    const byProductDRE = DRE_FACTORS[byProductGas] ?? 0;
+                    const byProductAbatementFactor = 1 - (utRatio * byProductDRE);
+
+                    const byProductEmissionRaw = netActivity * byProductEf * byProductAbatementFactor;
+                    const byProductEmission = roundTo(byProductEmissionRaw, 4);
+
+                    const byProductGWP = GWP_DATA[byProductGas]?.[gwpVersion] ?? 0;
+                    const byProductCO2e = roundTo(byProductEmission * byProductGWP, 4);
+                    totalCO2e += byProductCO2e;
+
+                    tableRows += `<tr>
+                        <td><span class="badge-byproduct">副產物</span></td>
+                        <td>${byProductGas}</td>
+                        <td>${byProductEf.toFixed(4)}</td>
+                        <td>${(byProductDRE * 100).toFixed(1)}%</td>
+                        <td>${byProductEmission.toFixed(4)}</td>
+                        <td>${byProductGWP.toLocaleString()}</td>
+                        <td><strong>${byProductCO2e.toFixed(4)}</strong></td>
+                    </tr>`;
+                }
+            }
+        }
+
+        // 渲染結果表格
+        resultsOutput.innerHTML = `<table>
+            <thead><tr>
+                <th>類別</th><th>氣體名稱</th><th>未破壞/生成係數</th>
+                <th>削減率 (DRE)</th><th>實質排放量 (噸)</th>
+                <th>GWP (${gwpVersion})</th><th>排放當量 (tCO₂e)</th>
+            </tr></thead>
+            <tbody>${tableRows}</tbody>
+        </table>`;
+        totalEmissionsEl.innerHTML = `${roundTo(totalCO2e, 4).toFixed(4)} <span class="unit">tCO₂e</span>`;
+    }
+
+    // 綁定事件監聽
+    [gasSelect, gwpVersionSelect, heelFactorSelect, waferSizeSelect].forEach(el => {
+        el.addEventListener('change', calculateEmissions);
+    });
+     [activityInput, allocationInput, utValueInput, calculateBtn].forEach(el => {
+        el.addEventListener('blur', calculateEmissions);
+        el.addEventListener('click', calculateEmissions);
+    });
+
+    // 頁面載入後執行試算
+    calculateEmissions();
+});
