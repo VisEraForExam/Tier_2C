@@ -12,13 +12,11 @@
     --text-muted: #64748b;
     --highlight: #b91c1c;
 }
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
     background-color: var(--bg-color);
@@ -26,29 +24,24 @@ body {
     line-height: 1.5;
     padding: 24px 16px;
 }
-
 .container {
     max-width: 1200px;
     margin: 0 auto;
 }
-
 header {
     text-align: center;
     margin-bottom: 24px;
 }
-
 header h1 {
     font-size: 1.75rem;
     color: var(--primary-color);
     font-weight: 700;
 }
-
 .subtitle {
     color: var(--text-muted);
     font-size: 0.9rem;
     margin-top: 4px;
 }
-
 /* 主版面雙欄佈局 */
 .main-layout {
     display: grid;
@@ -57,13 +50,11 @@ header h1 {
     align-items: start;
     margin-bottom: 20px;
 }
-
 @media (max-width: 860px) {
     .main-layout {
         grid-template-columns: 1fr;
     }
 }
-
 .controls-card, .results-card, .history-card {
     background: var(--card-bg);
     border-radius: 12px;
@@ -71,22 +62,18 @@ header h1 {
     padding: 20px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-
 .card-header {
     border-bottom: 2px solid var(--bg-color);
     padding-bottom: 12px;
     margin-bottom: 16px;
 }
-
 .card-header h2 {
     font-size: 1.15rem;
     color: var(--text-main);
 }
-
 .form-group {
     margin-bottom: 14px;
 }
-
 .form-group label {
     display: block;
     font-size: 0.85rem;
@@ -94,7 +81,6 @@ header h1 {
     color: #334155;
     margin-bottom: 4px;
 }
-
 .form-group input, .form-group select {
     width: 100%;
     padding: 8px 12px;
@@ -104,14 +90,12 @@ header h1 {
     background-color: #f8fafc;
     transition: all 0.2s;
 }
-
 .form-group input:focus, .form-group select:focus {
     outline: none;
     border-color: var(--primary-color);
     background-color: #fff;
     box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
 }
-
 #calculate-btn {
     width: 100%;
     padding: 11px;
@@ -125,11 +109,9 @@ header h1 {
     transition: background 0.2s;
     margin-top: 6px;
 }
-
 #calculate-btn:hover {
     background: var(--primary-hover);
 }
-
 .btn-save {
     width: 100%;
     padding: 10px;
@@ -143,44 +125,36 @@ header h1 {
     transition: background 0.2s;
     margin-top: 8px;
 }
-
 .btn-save:hover {
     background: var(--success-hover);
 }
-
 /* 結果表格 */
 .table-responsive {
     overflow-x: auto;
 }
-
 table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem;
     margin-bottom: 16px;
 }
-
 table th, table td {
     padding: 10px 12px;
     text-align: right;
     border-bottom: 1px solid var(--border-color);
 }
-
 table th:first-child, table td:first-child,
 table th:nth-child(2), table td:nth-child(2) {
     text-align: left;
 }
-
 table th {
     background-color: #f8fafc;
     color: #475569;
     font-weight: 600;
 }
-
 table tbody tr:hover {
     background-color: #f8fafc;
 }
-
 .badge-input {
     display: inline-block;
     padding: 2px 6px;
@@ -190,7 +164,6 @@ table tbody tr:hover {
     font-weight: 600;
     font-size: 0.75rem;
 }
-
 .badge-byproduct {
     display: inline-block;
     padding: 2px 6px;
@@ -200,7 +173,6 @@ table tbody tr:hover {
     font-weight: 600;
     font-size: 0.75rem;
 }
-
 .summary-box {
     display: flex;
     justify-content: space-between;
@@ -211,25 +183,21 @@ table tbody tr:hover {
     border-radius: 8px;
     margin-top: 16px;
 }
-
 .summary-label {
     font-size: 1rem;
     font-weight: 600;
     color: var(--primary-color);
 }
-
 .summary-value {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--highlight);
 }
-
 .summary-value .unit {
     font-size: 0.95rem;
     color: #64748b;
     font-weight: normal;
 }
-
 .formula-note {
     margin-top: 16px;
     padding: 12px;
@@ -239,21 +207,18 @@ table tbody tr:hover {
     color: var(--text-muted);
     line-height: 1.6;
 }
-
-/* 歷史存檔卡片樣式 (已修復按鈕排版) */
+/* 歷史存檔卡片樣式 */
 .history-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 .record-count {
     font-size: 0.85rem;
     color: var(--text-muted);
     font-weight: normal;
     margin-left: 6px;
 }
-
 .btn-clear-all {
     background: none;
     border: 1px solid var(--border-color);
@@ -265,10 +230,77 @@ table tbody tr:hover {
     font-weight: 600;
     transition: all 0.2s;
 }
-
 .btn-clear-all:hover {
     background: #fee2e2;
     border-color: var(--danger-color);
 }
-
-.history-table-r
+.history-table-responsive {
+    overflow-x: auto;
+}
+.history-table th, .history-table td {
+    text-align: center;
+    white-space: nowrap; /* 強制所有欄位內容不換行 */
+}
+.history-table td.cell-highlight {
+    font-weight: 700;
+    color: var(--highlight);
+    text-align: right;
+}
+.history-table td:last-child {
+    min-width: 125px; /* 操作欄位設定足夠最小寬度，防止按鈕上下擠壓 */
+    text-align: center;
+}
+.btn-load {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 4px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn-load:hover {
+    background: #0284c7;
+    color: #fff;
+}
+.btn-delete {
+    display: inline-block;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn-delete:hover {
+    background: #dc2626;
+    color: #fff;
+}
+.empty-history {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+/* 頁尾與簽名 */
+footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+.signature {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
