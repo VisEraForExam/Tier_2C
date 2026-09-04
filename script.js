@@ -1,71 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. GWP 係數資料庫 (AR5 / AR6)
     const GWP_DATA = {
-        "CF4": { "AR5": 6630, "AR6": 7380 },
-        "C2F6": { "AR5": 11100, "AR6": 12400 },
-        "CHF3": { "AR5": 12400, "AR6": 14600 },
-        "CH2F2": { "AR5": 677, "AR6": 771 },
-        "CH3F": { "AR5": 116, "AR6": 135 },
-        "C3F8": { "AR5": 8900, "AR6": 9290 },
-        "c-C4F8": { "AR5": 9540, "AR6": 10200 },
-        "NF3": { "AR5": 16100, "AR6": 17400 },
-        "SF6": { "AR5": 23500, "AR6": 24300 },
-        "C4F6": { "AR5": 0, "AR6": 0 },
-        "C5F8": { "AR5": 2, "AR6": 2 },
-        "C4F8O": { "AR5": 0, "AR6": 0 },
-        "C2HF5": { "AR5": 3170, "AR6": 3500 },
-        "N2O": { "AR5": 265, "AR6": 273 }
+        "CF4": { "AR5": 6630, "AR6": 7380 }, "C2F6": { "AR5": 11100, "AR6": 12400 }, "CHF3": { "AR5": 12400, "AR6": 14600 },
+        "CH2F2": { "AR5": 677, "AR6": 771 }, "CH3F": { "AR5": 116, "AR6": 135 }, "C3F8": { "AR5": 8900, "AR6": 9290 },
+        "c-C4F8": { "AR5": 9540, "AR6": 10200 }, "NF3": { "AR5": 16100, "AR6": 17400 }, "SF6": { "AR5": 23500, "AR6": 24300 },
+        "C4F6": { "AR5": 0, "AR6": 0 }, "C5F8": { "AR5": 2, "AR6": 2 }, "C4F8O": { "AR5": 0, "AR6": 0 },
+        "C2HF5": { "AR5": 3170, "AR6": 3500 }, "N2O": { "AR5": 265, "AR6": 273 }
     };
 
     // 2. 尾氣處理去除率 DRE (d_j)
     const DRE_FACTORS = {
-        "CF4": 0.89, "C2F4": 0.98, "C2F6": 0.98, "C3F8": 0.99,
-        "C4F6": 0.98, "c-C4F8": 0.98, "C4F8O": 0.98, "C5F8": 0.98,
-        "CHF3": 0.98, "CH2F2": 0.99, "CH3F": 0.99, "C2HF5": 0.98,
-        "NF3": 0.95, "SF6": 0.96, "N2O": 0.60
+        "CF4": 0.89, "C2F4": 0.98, "C2F6": 0.98, "C3F8": 0.99, "C4F6": 0.98, "c-C4F8": 0.98, "C4F8O": 0.98, "C5F8": 0.98,
+        "CHF3": 0.98, "CH2F2": 0.99, "CH3F": 0.99, "C2HF5": 0.98, "NF3": 0.95, "SF6": 0.96, "N2O": 0.60
     };
 
     // 3. 300mm (12吋) 排放因子庫 (已校正 Bc-C4F8)
     const EF_300MM = {
-        "(1-Ui)": {
-            "CF4": 0.65, "C2F6": 0.80, "C3F8": 0.30, "C4F6": 0.15,
-            "c-C4F8": 0.18, "C5F8": 0.10, "CHF3": 0.38, "CH2F2": 0.20,
-            "CH3F": 0.32, "NF3": 0.16, "SF6": 0.29, "N2O": 0.00
-        },
-        "BCF4": {
-            "CF4": 0.0, "C2F6": 0.21, "C3F8": 0.21, "C4F6": 0.059,
-            "c-C4F8": 0.045, "C5F8": 0.11, "CHF3": 0.076, "CH2F2": 0.060,
-            "CH3F": 0.031, "NF3": 0.045, "SF6": 0.034
-        },
-        "BC2F6": {
-            "CF4": 0.061, "C2F6": 0.0, "C3F8": 0.18, "C4F6": 0.062,
-            "c-C4F8": 0.027, "C5F8": 0.083, "CHF3": 0.062, "CH2F2": 0.044,
-            "CH3F": 0.011, "NF3": 0.045, "SF6": 0.041
-        },
-        "BC3F8": { "C5F8": 0.00012 },
-        "BC4F6": { "CF4": 0.0015, "c-C4F8": 0.0094, "CHF3": 0.0001, "CH3F": 0.0012 },
-        "Bc-C4F8": { "CF4": 0.0033, "C4F6": 0.0051, "CHF3": 0.00067, "CH2F2": 0.072, "CH3F": 0.007 },
-        "BCH3F": { "CF4": 0.0053, "C3F8": 0.00073, "C4F6": 0.00065, "c-C4F8": 0.0022, "CHF3": 0.037, "CH2F2": 0.0044, "NF3": 0.008, "SF6": 0.0082 },
-        "BCH2F2": { "CF4": 0.014, "C4F6": 0.00003, "c-C4F8": 0.0014, "CHF3": 0.0026, "CH3F": 0.0023, "NF3": 0.00086, "SF6": 0.00002 },
-        "BCHF3": { "CF4": 0.013, "C3F8": 0.012, "C4F6": 0.017, "c-C4F8": 0.029, "C5F8": 0.0069, "CH2F2": 0.057, "CH3F": 0.0016, "NF3": 0.025, "SF6": 0.0039 }
+        "(1-Ui)": {"CF4":0.65,"C2F6":0.80,"C3F8":0.30,"C4F6":0.15,"c-C4F8":0.18,"C5F8":0.10,"CHF3":0.38,"CH2F2":0.20,"CH3F":0.32,"NF3":0.16,"SF6":0.29,"N2O":0.00},
+        "BCF4": {"CF4":0.0,"C2F6":0.21,"C3F8":0.21,"C4F6":0.059,"c-C4F8":0.045,"C5F8":0.11,"CHF3":0.076,"CH2F2":0.060,"CH3F":0.031,"NF3":0.045,"SF6":0.034},
+        "BC2F6": {"CF4":0.061,"C2F6":0.0,"C3F8":0.18,"C4F6":0.062,"c-C4F8":0.027,"C5F8":0.083,"CHF3":0.062,"CH2F2":0.044,"CH3F":0.011,"NF3":0.045,"SF6":0.041},
+        "BC3F8": {"C5F8":0.00012},
+        "BC4F6": {"CF4":0.0015,"c-C4F8":0.0094,"CHF3":0.0001,"CH3F":0.0012},
+        "Bc-C4F8": {"CF4":0.0033,"C4F6":0.0051,"CHF3":0.00067,"CH2F2":0.072,"CH3F":0.007},
+        "BCH3F": {"CF4":0.0053,"C3F8":0.00073,"C4F6":0.00065,"c-C4F8":0.0022,"CHF3":0.037,"CH2F2":0.0044,"NF3":0.008,"SF6":0.0082},
+        "BCH2F2": {"CF4":0.014,"C4F6":0.00003,"c-C4F8":0.0014,"CHF3":0.0026,"CH3F":0.0023,"NF3":0.00086,"SF6":0.00002},
+        "BCHF3": {"CF4":0.013,"C3F8":0.012,"C4F6":0.017,"c-C4F8":0.029,"C5F8":0.0069,"CH2F2":0.057,"CH3F":0.0016,"NF3":0.025,"SF6":0.0039}
     };
 
     // 4. 200mm (8吋) 排放因子庫
     const EF_200MM = {
-        "(1-Ui)": {
-            "CF4": 0.70, "C2F6": 0.60, "C3F8": 0.40, "c-C4F8": 0.20,
-            "CHF3": 0.30, "NF3": 0.20, "SF6": 0.50
-        },
-        "BCF4": { "C2F6": 0.10, "C3F8": 0.10, "c-C4F8": 0.10, "CHF3": 0.10, "NF3": 0.10 },
-        "BC2F6": { "C3F8": 0.10, "c-C4F8": 0.10 },
-        "BCHF3": { "c-C4F8": 0.05 }
+        "(1-Ui)":{"CF4":0.70,"C2F6":0.60,"C3F8":0.40,"c-C4F8":0.20,"CHF3":0.30,"NF3":0.20,"SF6":0.50},
+        "BCF4":{"C2F6":0.10,"C3F8":0.10,"c-C4F8":0.10,"CHF3":0.10,"NF3":0.10},
+        "BC2F6":{"C3F8":0.10,"c-C4F8":0.10},
+        "BCHF3":{"c-C4F8":0.05}
     };
 
-    // 儲存庫 LocalStorage 鍵值與容量限制
+    // LocalStorage 鍵值與筆數上限
     const STORAGE_KEY = 'GHG_TIER2C_SAVED_RECORDS';
     const MAX_RECORDS = 20;
 
-    // DOM 元素
+    // DOM 元素綁定
     const gasSelect = document.getElementById('gas-select');
     const activityInput = document.getElementById('activity-data');
     const allocationInput = document.getElementById('allocation-rate');
@@ -81,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyContainer = document.getElementById('history-container');
     const recordCountEl = document.getElementById('record-count');
 
-    // 精確四捨五入
+    // 精確四捨五入函數
     function roundTo(num, decimals) {
         const factor = Math.pow(10, decimals);
         return Math.round((num + Number.EPSILON) * factor) / factor;
@@ -97,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     gasSelect.value = 'c-C4F8';
 
-    // 格式化輸入數值
+    // 格式化數值輸入 (小數點 4 位)
     [activityInput, allocationInput, utValueInput].forEach(input => {
         input.addEventListener('blur', () => {
             const val = parseFloat(input.value);
@@ -126,10 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const oneMinusUi = EF_TABLE['(1-Ui)']?.[gas] ?? 0;
         const inputDRE = DRE_FACTORS[gas] ?? 0;
         const inputAbatementFactor = 1 - (utRatio * inputDRE);
-
         const inputGasEmissionRaw = netActivity * oneMinusUi * inputAbatementFactor;
         const inputGasEmission = roundTo(inputGasEmissionRaw, 4);
-
         const inputGasGWP = GWP_DATA[gas]?.[gwpVersion] ?? 0;
         const inputGasCO2e = roundTo(inputGasEmission * inputGasGWP, 4);
         totalCO2e += inputGasCO2e;
@@ -153,10 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (byProductEf > 0) {
                     const byProductDRE = DRE_FACTORS[byProductGas] ?? 0;
                     const byProductAbatementFactor = 1 - (utRatio * byProductDRE);
-
                     const byProductEmissionRaw = netActivity * byProductEf * byProductAbatementFactor;
                     const byProductEmission = roundTo(byProductEmissionRaw, 4);
-
                     const byProductGWP = GWP_DATA[byProductGas]?.[gwpVersion] ?? 0;
                     const byProductCO2e = roundTo(byProductEmission * byProductGWP, 4);
                     totalCO2e += byProductCO2e;
@@ -174,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 渲染明細表
+        // 渲染結果明細
         resultsOutput.innerHTML = `<table>
             <thead><tr>
                 <th>類別</th><th>氣體名稱</th><th>未破壞/生成係數</th>
@@ -194,12 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const stored = localStorage.getItem(STORAGE_KEY);
         return stored ? JSON.parse(stored) : [];
     }
-
     function saveRecords(records) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
         renderHistory();
     }
-
     function renderHistory() {
         const records = getStoredRecords();
         recordCountEl.textContent = `(${records.length} / ${MAX_RECORDS})`;
@@ -249,14 +217,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // 儲存當前數據
+    // 儲存當前資料按鈕
     saveBtn.addEventListener('click', () => {
         const currentTotal = calculateEmissions();
         const records = getStoredRecords();
 
         const now = new Date();
         const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
+        
         const newRecord = {
             id: 'REC_' + Date.now(),
             time: timeStr,
@@ -270,16 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
             totalCO2e: currentTotal
         };
 
-        // 最新資料放最上面，超過 20 筆移除最舊的一筆
         records.unshift(newRecord);
         if (records.length > MAX_RECORDS) {
             records.pop();
         }
-
         saveRecords(records);
     });
 
-    // 清空所有歷史紀錄
+    // 清空歷史按鈕
     clearAllBtn.addEventListener('click', () => {
         const records = getStoredRecords();
         if (records.length === 0) return;
@@ -288,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 暴露全域函數供按鈕點擊
+    // 點選「帶回」與「刪除」全域函數
     window.loadRecord = function(id) {
         const records = getStoredRecords();
         const target = records.find(r => r.id === id);
@@ -305,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateEmissions();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
     window.deleteRecord = function(id) {
         let records = getStoredRecords();
         records = records.filter(r => r.id !== id);
@@ -316,12 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
     [gasSelect, gwpVersionSelect, heelFactorSelect, waferSizeSelect].forEach(el => {
         el.addEventListener('change', calculateEmissions);
     });
-    [activityInput, allocationInput, utValueInput, calculateBtn].forEach(el => {
-        el.addEventListener('blur', calculateEmissions);
-        el.addEventListener('click', calculateEmissions);
+    [activityInput, allocationInput, utValueInput].forEach(el => {
+        el.addEventListener('input', calculateEmissions);
     });
 
-    // 初始載入
+    // 初始執行
     calculateEmissions();
     renderHistory();
 });
