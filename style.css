@@ -49,7 +49,7 @@ header h1 {
     margin-top: 4px;
 }
 
-/* 主版面佈局 */
+/* 主版面雙欄佈局 */
 .main-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -240,7 +240,7 @@ table tbody tr:hover {
     line-height: 1.6;
 }
 
-/* 歷史存檔卡片樣式 */
+/* 歷史存檔卡片樣式 (已修復按鈕排版) */
 .history-header {
     display: flex;
     justify-content: space-between;
@@ -271,79 +271,4 @@ table tbody tr:hover {
     border-color: var(--danger-color);
 }
 
-.history-table-responsive {
-    overflow-x: auto;
-}
-
-.history-table th {
-    text-align: center;
-    white-space: nowrap;
-}
-
-.history-table td {
-    text-align: center;
-    white-space: nowrap;
-}
-
-.history-table td.cell-highlight {
-    font-weight: 700;
-    color: var(--highlight);
-    text-align: right;
-}
-
-.btn-load {
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-right: 4px;
-    transition: all 0.2s;
-}
-
-.btn-load:hover {
-    background: #0284c7;
-    color: #fff;
-}
-
-.btn-delete {
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-delete:hover {
-    background: #dc2626;
-    color: #fff;
-}
-
-.empty-history {
-    text-align: center;
-    padding: 30px 10px;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-/* 頁尾與簽名 */
-footer {
-    text-align: center;
-    margin-top: 24px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.signature {
-    margin-top: 8px;
-    font-size: 0.85rem;
-    color: #94a3b8;
-    font-weight: 500;
-}
+.history-table-r
