@@ -1,6 +1,10 @@
 :root {
     --primary-color: #1e40af;
     --primary-hover: #1d4ed8;
+    --success-color: #059669;
+    --success-hover: #047857;
+    --danger-color: #dc2626;
+    --danger-hover: #b91c1c;
     --bg-color: #f1f5f9;
     --card-bg: #ffffff;
     --border-color: #e2e8f0;
@@ -45,12 +49,13 @@ header h1 {
     margin-top: 4px;
 }
 
-/* 雙欄佈局：左側選單收窄約 30%，右側結果區寬敞 */
+/* 主版面佈局 */
 .main-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
     gap: 20px;
     align-items: start;
+    margin-bottom: 20px;
 }
 
 @media (max-width: 860px) {
@@ -59,7 +64,7 @@ header h1 {
     }
 }
 
-.controls-card, .results-card {
+.controls-card, .results-card, .history-card {
     background: var(--card-bg);
     border-radius: 12px;
     border: 1px solid var(--border-color);
@@ -109,20 +114,38 @@ header h1 {
 
 #calculate-btn {
     width: 100%;
-    padding: 12px;
+    padding: 11px;
     background: var(--primary-color);
     color: #fff;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 6px;
+}
+
+#calculate-btn:hover {
+    background: var(--primary-hover);
+}
+
+.btn-save {
+    width: 100%;
+    padding: 10px;
+    background: var(--success-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
     margin-top: 8px;
 }
 
-#calculate-btn:hover {
-    background: var(--primary-hover);
+.btn-save:hover {
+    background: var(--success-hover);
 }
 
 /* 結果表格 */
@@ -178,7 +201,6 @@ table tbody tr:hover {
     font-size: 0.75rem;
 }
 
-/* 總排放量方塊 */
 .summary-box {
     display: flex;
     justify-content: space-between;
@@ -218,16 +240,110 @@ table tbody tr:hover {
     line-height: 1.6;
 }
 
+/* 歷史存檔卡片樣式 */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.record-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: normal;
+    margin-left: 6px;
+}
+
+.btn-clear-all {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    color: var(--danger-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-clear-all:hover {
+    background: #fee2e2;
+    border-color: var(--danger-color);
+}
+
+.history-table-responsive {
+    overflow-x: auto;
+}
+
+.history-table th {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.history-table td {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.history-table td.cell-highlight {
+    font-weight: 700;
+    color: var(--highlight);
+    text-align: right;
+}
+
+.btn-load {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 4px;
+    transition: all 0.2s;
+}
+
+.btn-load:hover {
+    background: #0284c7;
+    color: #fff;
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    color: #fff;
+}
+
+.empty-history {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* 頁尾與簽名 */
 footer {
     text-align: center;
     margin-top: 24px;
     font-size: 0.8rem;
     color: var(--text-muted);
 }
-/* Signature Style */
+
 .signature {
     margin-top: 8px;
     font-size: 0.85rem;
-    color: #94a3b8; /* A lighter, more subtle color */
+    color: #94a3b8;
     font-weight: 500;
 }
